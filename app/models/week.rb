@@ -1,4 +1,4 @@
-class PlayerWeek < ApplicationRecord
-    belongs_to :player
-    belongs_to :week
+class Week < ApplicationRecord
+    has_many :player_weeks
+    has_many :players, through: :player_weeks
   end
