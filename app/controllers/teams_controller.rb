@@ -1,50 +1,45 @@
 class TeamsController < ApplicationController
-    before_action :set_team, only: [:show, :edit, :update, :destroy]
-  
-    def index
-      @teams = Team.all
-    end
-  
-    def show
-    end
-  
-    def new
-      @team = Team.new
-    end
-  
-    def edit
-    end
-  
-    def create
-      @team = Team.new(team_params)
-  
-      if @team.save
-        redirect_to @team, notice: 'Team was successfully created.'
-      else
-        render :new
-      end
-    end
-  
-    def update
-      if @team.update(team_params)
-        redirect_to @team, notice: 'Team was successfully updated.'
-      else
-        render :edit
-      end
-    end
-  
-    def destroy
-      @team.destroy
-      redirect_to teams_url, notice: 'Team was successfully destroyed.'
-    end
-  
-    private
-  
-    def set_team
-      @team = Team.find(params[:id])
-    end
-  
-    def team_params
-      params.require(:team).permit(:name, :user_id)
+  before_action :set_team, only: [:show, :update, :destroy]
+
+  def index
+    @teams = Team.all
+    render json: @teams
+  end
+
+  def show
+    render json: @team
+  end
+
+  def create
+    @team = Team.new(team_params)
+
+    if @team.save
+      render json: @team, status: :created, location: @team
+    else
+      render json: @team.errors, status: :unprocessable_entity
     end
   end
+
+  def update
+    if @team.update(team_params)
+      render json: @team
+    else
+      render json: @team.errors, status: :unprocessable_entity
+    end
+  end
+
+  def destroy
+    @team.destroy
+    head :no_content
+  end
+
+  private
+
+  def set_team
+    @team = Team.find(params[:id])
+  end
+
+  def team_params
+    params.require(:team).permit(:name, :user_id)
+  end
+end
