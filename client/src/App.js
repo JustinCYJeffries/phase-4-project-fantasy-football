@@ -1,47 +1,45 @@
-import './App.css';
-import React, {useEffect, useState} from "react"
-import Login from './Login'
-import TeamsPage from './TeamsPage'
-import SignUp from './SignUp'
+import React, { useState } from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Header from "./Header";
+import LoginForm from "./LoginForm";
+import SignupForm from "./SignupForm";
+import PrivateRoute from "./PrivateRoute";
 
-function App() {
-  const [team, setTeam] = useState([])
-  const [user, setUser] = useState(null);
-  
-  
-  useEffect(() => {
-    fetch("http://localhost:3000/team")
-      .then((r) => r.json())
-      .then(setTeam);
-  }, []);
+const App = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  useEffect(() => {
-    fetch("/me").then((response) => {
-      if (response.ok) {
-        response.json().then((user) => setUser(user));
-      }
-    });
-  }, []);
-
-  if (user) {
-    return <div><h2>Welcome, {user.username}!</h2><TeamsPage setTeam={setTeam} team={team}/></div> ;
-  } else {
-    return <div>
-    <table>
-      <tr>
-        <td width='50%'>
-          <h2>Create a User</h2>
-          <SignUp/>
-          </td>
-          <td>
-            <h2>Login</h2><Login onLogin={setUser} />
-          </td>
-          </tr></table>
-          
-    
-    </div>
+  function onSignup (user) {
+    fetch('/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user })
+    })
+      .then(response => response.json())
+      .then(data => console.log(data))
+      .catch(error => console.error(error)); 
   }
-}
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+  };
 
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+  };
+
+  return (
+    <Router>
+      <div className="App">
+        <Header loggedIn={isLoggedIn} />
+        <main>
+          <Routes>
+            <Route path="/login" element={<LoginForm onLogin={handleLogin}/>}  />
+            <Route path="/signup" element={<SignupForm onSignup={onSignup} />}  />
+            
+          </Routes>
+        </main>
+      </div>
+    </Router>
+  );
+};
 
 export default App;
