@@ -1,19 +1,20 @@
-import React from "react";
-import PlayerCard from "./PlayerCard";
+import React from 'react';
+import Player from './Player';
 
-const TeamRoster = ({ team, onRemovePlayer }) => {
-  const players = team.players.map((player) => (
-    <PlayerCard key={player.id} player={player} onRemovePlayer={onRemovePlayer} />
-  ));
-
+const TeamRoster = ({ players, onEditPlayer, onDeletePlayer }) => {
   return (
     <div>
-      <h3>Team Roster</h3>
-      {players.length === 0 ? (
-        <p>No players added to the team yet.</p>
-      ) : (
-        <div className="row">{players}</div>
-      )}
+      <h2>Team Roster</h2>
+      <ul>
+        {players.map(player => (
+          <Player 
+            key={player.id} 
+            player={player} 
+            onEditPlayer={onEditPlayer} 
+            onDeletePlayer={onDeletePlayer} 
+          />
+        ))}
+      </ul>
     </div>
   );
 };

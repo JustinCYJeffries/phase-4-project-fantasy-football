@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Switch, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import axios from "axios";
+
 import Header from './Header';
 import Auth from './Auth';
 import PrivateRoute from './PrivateRoute';
@@ -7,71 +9,95 @@ import Sidebar from './Sidebar';
 import TeamList from './TeamList';
 import CreateTeamForm from './CreateTeamForm';
 import SelectTeamForm from './SelectTeamForm';
+import TeamRoster from './TeamRoster';
+import LoginForm from './LoginForm';
+import SignupForm from './SignupForm';
 
 function App() {
-  const [user, setUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
   const [teams, setTeams] = useState([]);
+  const [selectedTeam, setSelectedTeam] = useState(null);
+  const [players, setPlayers] = useState([]);
 
   useEffect(() => {
-    // fetch user data from API and set to state
-    fetch('/api/users/current')
-      .then((response) => response.json())
-      .then((data) => setUser(data.user))
-      .catch((error) => console.error(error));
-
-    // fetch team data from API and set to state
-    fetch('/api/teams')
-      .then((response) => response.json())
-      .then((data) => setTeams(data.teams))
-      .catch((error) => console.error(error));
+    // Fetch teams when the component mounts
+    const fetchTeams = async () => {
+      const response = await axios.get("/api/teams");
+      setTeams(response.data);
+    };
+    fetchTeams();
   }, []);
 
-  const handleCreateTeam = (newTeam) => {
-    // send POST request to API to create new team
-    fetch('/api/teams', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(newTeam),
-    })
-      .then((response) => response.json())
-      .then((data) => setTeams([...teams, data.team]))
-      .catch((error) => console.error(error));
+  useEffect(() => {
+    // Fetch players for selected team when it changes
+    const fetchPlayers = async () => {
+      if (selectedTeam) {
+        const response = await axios.get(`/api/teams/${selectedTeam.id}/players`);
+        setPlayers(response.data);
+      }
+    };
+    fetchPlayers();
+  }, [selectedTeam]);
+
+  const handleLogin = async (username, password) => {
+    // Send login request to server
+    const response = await axios.post("/api/auth/login", { username, password });
+
+    // Update current user state
+    setCurrentUser(response.data);
   };
 
-  const handleSelectTeam = (selectedTeam) => {
-    // set selected team to state
+  const handleSignup = async (username, password, email) => {
+    // Send signup request to server
+    const response = await axios.post("/api/users", { username, password, email });
+
+    // Update current user state
+    setCurrentUser(response.data);
+  };
+
+  const handleCreateTeam = async (name) => {
+    // Send create team request to server
+    const response = await axios.post("/api/teams", { name });
+
+    // Update teams state
+    setTeams([...teams, response.data]);
+  };
+
+  const handleSelectTeam = (team) => {
+    // Update selected team state
+    setSelectedTeam(team);
   };
 
   return (
     <div className="App">
-      <Header />
-      <Routes>
-        <Route path="/login">
-          <Auth />
-        </Route>
-        <PrivateRoute path="/">
-          <div className="container">
-            <div className="row">
-              <Sidebar user={user} />
-              <div className="col-md-8">
-                <Routes>
-                  <Route path="/" exact>
-                    <TeamList teams={teams} />
-                  </Route>
-                  <Route path="/create-team">
-                    <CreateTeamForm onCreateTeam={handleCreateTeam} />
-                  </Route>
-                  <Route path="/select-team">
-                    <SelectTeamForm teams={teams} onSelectTeam={handleSelectTeam} />
-                  </Route>
-                </Routes>
-              </div>
-            </div>
-          </div>
-        </PrivateRoute>
-      </Routes>
+      <Router>
+        <Routes>
+          <Route exact path="/">
+            {currentUser ? (
+              <>
+                <Sidebar />
+                <main>
+                  <h1>My Teams</h1>
+                  <TeamList teams={teams} onSelectTeam={handleSelectTeam} />
+                  <CreateTeamForm onCreateTeam={handleCreateTeam} />
+                  {selectedTeam && (
+                    <>
+                      <h2>{selectedTeam.name}</h2>
+                      <SelectTeamForm team={selectedTeam} />
+                      <TeamRoster players={players} />
+                    </>
+                  )}
+                </main>
+              </>
+            ) : (
+              <LoginForm onLogin={handleLogin} />
+            )}
+          </Route>
+          <Route path="/signup">
+            <SignupForm onSignup={handleSignup} />
+          </Route>
+        </Routes>
+      </Router>
     </div>
   );
 }

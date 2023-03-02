@@ -1,13 +1,9 @@
 import { useState, useEffect } from 'react';
 
-function SelectTeamForm({ onSelectTeam }) {
-  const [teams, setTeams] = useState([]);
+const SelectTeamForm = (props) => {
+    const { teams, onSelectTeam } = props;
 
-  useEffect(() => {
-    fetch('/teams') // make a GET request to the server to retrieve all the teams
-      .then(res => res.json()) // parse the response as JSON
-      .then(data => setTeams(data)); // update the state with the retrieved teams
-  }, []);
+
 
   function handleSelectTeam(team) {
     onSelectTeam(team); // invoke the callback function passed as props
@@ -15,16 +11,17 @@ function SelectTeamForm({ onSelectTeam }) {
 
   return (
     <div>
-      <h2>Select a Team:</h2>
-      <ul>
-        {teams.map(team => (
-          <li key={team.id}>
-            <button onClick={() => handleSelectTeam(team)}>{team.name}</button>
-          </li>
+      <h3>Select a team:</h3>
+      <select onChange={handleSelectTeam}>
+        <option value="">Choose a team</option>
+        {teams.map((team) => (
+          <option key={team.id} value={team.id}>
+            {team.name}
+          </option>
         ))}
-      </ul>
+      </select>
     </div>
   );
-}
+};
 
 export default SelectTeamForm;
