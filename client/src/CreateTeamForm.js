@@ -1,26 +1,30 @@
-import { useState } from 'react';
+import { useState } from "react";
 
 function CreateTeamForm({ onCreateTeam }) {
-  const [teamName, setTeamName] = useState('');
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    onCreateTeam(teamName);
-    setTeamName('');
-  };
-
-  const handleChange = (event) => {
-    setTeamName(event.target.value);
+    onCreateTeam({ name, description });
+    setName("");
+    setDescription("");
   };
 
   return (
     <form onSubmit={handleSubmit}>
+      <h2>Create Team</h2>
       <label>
-        Team name:
-        <input type="text" value={teamName} onChange={handleChange} />
+        Name:
+        <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
       </label>
-      <button type="submit">Create team</button>
+      <label>
+        Description:
+        <textarea value={description} onChange={(e) => setDescription(e.target.value)} />
+      </label>
+      <button type="submit">Create</button>
     </form>
   );
 }
-export default CreateTeamForm
+
+export default CreateTeamForm;
