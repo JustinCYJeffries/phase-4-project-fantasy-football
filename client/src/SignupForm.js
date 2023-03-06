@@ -16,7 +16,7 @@ const SignupForm = ({ onSignup }) => {
       return;
     }
     let user = [username, password]
-    onSignup(user)
+    onSignup(username, password)
       
         setUsername("");
         setPassword("");

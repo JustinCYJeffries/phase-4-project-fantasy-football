@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
 
-const CreateTeamForm = ({ onSubmit }) => {
+const CreateTeamForm = ({ onCreateTeam, currentUser }) => {
   const [teamName, setTeamName] = useState('');
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    onSubmit(teamName);
+    onCreateTeam(teamName, currentUser);
     setTeamName('');
   };
 
   const handleTeamNameChange = (event) => {
     setTeamName(event.target.value);
+
   };
 
   return (
