@@ -1,11 +1,16 @@
 import React from 'react';
 
-const AddPlayerButton = ({ onClick }) => {
+const AddPlayerButton = ({ player, onAddPlayer }) => {
+
+  const handleAddPlayer = () => {
+    onAddPlayer(player);
+  }
+
   return (
-    <button onClick={onClick}>
-      Add Player
+    <button onClick={handleAddPlayer}>
+      Add {player.Name} ({player.Position})
     </button>
   );
-};
+}
 
 export default AddPlayerButton;

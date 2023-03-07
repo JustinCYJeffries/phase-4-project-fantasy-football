@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
   resources :users
-  resources :teams
+  resources :teams do
+    resources :players
+  end
   
   post "/login", to: "sessions#create"
   get "/me", to: "users#show"

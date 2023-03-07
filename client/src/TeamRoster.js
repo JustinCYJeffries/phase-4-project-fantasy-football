@@ -1,20 +1,28 @@
 import React from 'react';
 import Player from './Player';
 
-const TeamRoster = ({ players, onEditPlayer, onDeletePlayer }) => {
+const TeamRoster = ({ players, onRemovePlayer, onEditPlayer }) => {
   return (
     <div>
-      <h2>Team Roster</h2>
-      <ul>
-        {players.map(player => (
-          <Player 
-            key={player.id} 
-            player={player} 
-            onEditPlayer={onEditPlayer} 
-            onDeletePlayer={onDeletePlayer} 
-          />
-        ))}
-      </ul>
+      <h3>Roster</h3>
+      {players.length > 0 ? (
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Position</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {players.map((player) => (
+              <Player key={player.id} player={player} onRemovePlayer={onRemovePlayer} onEditPlayer={onEditPlayer} />
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <p>No players on roster.</p>
+      )}
     </div>
   );
 };

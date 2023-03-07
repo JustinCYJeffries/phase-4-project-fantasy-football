@@ -12,12 +12,24 @@ import SelectTeamForm from './SelectTeamForm';
 import TeamRoster from './TeamRoster';
 import LoginForm from './LoginForm';
 import SignupForm from './SignupForm';
+import PlayerSearchForm from './PlayerSearchForm';
+import PlayerSearchResult from './PlayerSearchResult';
+import AddPlayerButton from './AddPlayerButton';
+import ConfirmAddPlayerModal from './ConfirmAddPlayerModal';
+import EditPlayerModal from './EditPlayerModal';
+import MaxPlayersWarning from './MaxPlayersWarning';
 
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [teams, setTeams] = useState([]);
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [players, setPlayers] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
+  const [addingPlayer, setAddingPlayer] = useState(null);
+  const [editingPlayer, setEditingPlayer] = useState(null);
+  const [maxPlayersWarning, setMaxPlayersWarning] = useState(false);
+  const [newName, setNewName] = useState("");
+ 
  
   useEffect(() => {
     // Fetch teams when the component mounts
@@ -32,12 +44,23 @@ function App() {
     // Fetch players for selected team when it changes
     const fetchPlayers = async () => {
       if (selectedTeam) {
-        const response = await axios.get(`/api/teams/${selectedTeam.id}/players`);
+        const response = await axios.get(`http://localhost:3000/teams/${selectedTeam.id}/players`);
         setPlayers(response.data);
       }
     };
     fetchPlayers();
   }, [selectedTeam]);
+
+  useEffect(() => {
+    // Fetch players 
+    const fetchPlayers = async () => {
+      if (selectedTeam) {
+        const response = await axios.get(`http://localhost:3000/players`);
+        setPlayers(response.data);
+      }
+    };
+    fetchPlayers();
+  },[]);
 
   const handleLogin = async (username, password) => {
     // Send login request to server
@@ -58,16 +81,99 @@ function App() {
   const handleCreateTeam = async (name, currentUser) => {
     // Send create team request to server
     const userID = currentUser.id
-    const response = await axios.post("http://localhost:3000/teams", { name, user_id: userID });
+    console.log(currentUser)
+    const response = await axios.post("http://localhost:3000/teams", { name, user_id: currentUser });
   
     // Update teams state
     setTeams([...teams, response.data]);
   };
+
+  const handleDeleteTeam = async (teamId) => {
+    try {
+      const thisTeam = teamId.id
+      await axios.delete(`http://localhost:3000/teams/${thisTeam}`);
+      setTeams(teams.filter((team) => team.id !== thisTeam));
+      setSelectedTeam(null);
+      setPlayers([]);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleEditTeam = async (teamId) => {
+    // Send edit team request to server
+    const response = await axios.patch(`http://localhost:3000/teams/${teamId.id}`, { team:{name: newName} });
+    
+    // Update teams state
+    setTeams((prevTeams) => {
+      const index = prevTeams.findIndex((team) => team.id === teamId.id);
+      const updatedTeam = { ...prevTeams[index], name: response.data.name };
+      return [...prevTeams.slice(0, index), updatedTeam, ...prevTeams.slice(index + 1)];
+    });
+  };
   
+  
+  const handleEditPlayer = async (updatedPlayer) => {
+    try {
+      const response = await axios.patch(`http://localhost:3000/players/${updatedPlayer.id}`, updatedPlayer);
+      const updatedPlayers = players.map((player) =>
+        player.id === response.data.id ? response.data : player
+      );
+      setPlayers(updatedPlayers);
+      setEditingPlayer(null);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  
+  const handleEditTeamName = (name) =>{
+      setNewName(name)
+  };
 
   const handleSelectTeam = (team) => {
     // Update selected team state
     setSelectedTeam(team);
+  };
+
+  const handleAddPlayer = async (player) => {
+    // Check if the team is at maximum capacity
+    if (players.length >= 15) {
+      setMaxPlayersWarning(true);
+      return;
+    }
+
+    // Save the player to the server
+    if (selectedTeam){
+    const response = await axios.post(`http://localhost:3000/teams/${selectedTeam.id}/players`, { player });
+    setPlayers([...players, response.data]);
+    }
+
+    // Close the add player modal
+    setAddingPlayer(null);
+  };
+
+  const handlePlayerSearch = async (query) => {
+    // Send search request to server
+    const response = await axios.get(`https://api.sportsdata.io/v3/nfl/scores/json/Players?key=f96ee404946b4896b5691149c6e8e1bc&position=${query}`);
+    const playerList = response.data;
+  
+    // Filter players based on search query
+    const filteredPlayers = playerList.filter((player) =>
+      player.Name.toLowerCase().includes(query.toLowerCase())
+    );
+  
+    // Update filtered players state
+    setSearchResults(filteredPlayers);
+  };
+  
+
+
+  const handleDeletePlayer = async (player) => {
+    // Send delete player request to server
+    await axios.delete(`http://localhost:3000/players/${player.id}`);
+
+    // Remove player from players state
+    setPlayers(players.filter((p) => p.id !== player.id));
   };
 
   return (
@@ -77,16 +183,32 @@ function App() {
           <Route exact path="/" element=
             {currentUser ? (
               <>
-                <Sidebar teams={teams} setTeams={setTeams}/>
+                <Sidebar teams={teams} setTeams={setTeams} selectedTeam={selectedTeam} handleNewTeam={handleCreateTeam} handleSelectTeam={handleSelectTeam}/>
                 <main>
                   <h1>My Teams</h1>
-                  <TeamList teams={teams} onSelectTeam={handleSelectTeam} />
-                  <CreateTeamForm onCreateTeam={handleCreateTeam} currentUser={currentUser} />
+                  <TeamList teams={teams}
+                    onSelectTeam={handleSelectTeam}
+                    onDeleteTeam={handleDeleteTeam}
+                    onEditTeam={handleEditTeam}
+                    onAddPlayer={handleAddPlayer} />
+                  <CreateTeamForm onCreateTeam={handleCreateTeam} currentUser={currentUser} onEditTeam={handleEditTeamName}/>
                   {selectedTeam && (
                     <>
                       <h2>{selectedTeam.name}</h2>
-                      <SelectTeamForm team={selectedTeam} teams={teams} />
-                      <TeamRoster players={players} />
+                      <SelectTeamForm teams={teams} onSelectTeam={handleSelectTeam} />
+                      <PlayerSearchForm onSearch={handlePlayerSearch} />
+                      {searchResults && (
+                        <PlayerSearchResult
+                          players={searchResults}
+                          onSelectPlayer={handleAddPlayer}
+                        />
+                      )}
+                      <TeamRoster
+                        players={players}
+                        onEditPlayer={handleEditPlayer}
+                        onDeletePlayer={handleDeletePlayer}
+                      />
+                      <MaxPlayersWarning players={players} />
                     </>
                   )}
                 </main>

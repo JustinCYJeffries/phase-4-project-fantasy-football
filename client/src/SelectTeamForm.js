@@ -1,18 +1,24 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
-const SelectTeamForm = (props) => {
-    const { teams, onSelectTeam } = props;
+const SelectTeamForm = ({ teams, onSelectTeam }) => {
+  const [selectedTeamId, setSelectedTeamId] = useState('');
 
+  const handleChange = (event) => {
+    setSelectedTeamId(event.target.value);
+  };
 
-
-  function handleSelectTeam(team) {
-    onSelectTeam(team); // invoke the callback function passed as props
-  }
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const selectedTeam = teams.find((team) => team.id === selectedTeamId);
+    if (selectedTeam) {
+      onSelectTeam(selectedTeam);
+    }
+  };
 
   return (
-    <div>
-      <h3>Select a team:</h3>
-      <select onChange={handleSelectTeam}>
+    <form onSubmit={handleSubmit}>
+      <label htmlFor="team-select">Select a team:</label>
+      <select id="team-select" value={selectedTeamId} onChange={handleChange}>
         <option value="">Choose a team</option>
         {teams.map((team) => (
           <option key={team.id} value={team.id}>
@@ -20,7 +26,8 @@ const SelectTeamForm = (props) => {
           </option>
         ))}
       </select>
-    </div>
+      <button type="submit">Select</button>
+    </form>
   );
 };
 

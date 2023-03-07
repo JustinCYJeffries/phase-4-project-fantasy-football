@@ -1,11 +1,17 @@
 import React from 'react';
 
-const PlayerSearchResult = ({ player, handleAddPlayer }) => {
+const PlayerSearchResult = ({ players, onAddPlayer }) => {
   return (
     <div>
-      <h4>{player.name}</h4>
-      <p>{player.position}</p>
-      <button onClick={() => handleAddPlayer(player)}>Add to Team</button>
+      <h2>Search Results</h2>
+      <ul>
+        {players && players.map((player) => (
+          <li key={player.PlayerID}>
+            {player.FirstName} {player.LastName} ({player.Position})
+            <button onClick={() => onAddPlayer(player)}>Add to Team</button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };

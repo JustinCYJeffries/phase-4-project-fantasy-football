@@ -1,55 +1,73 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { Modal, Button, Form } from 'react-bootstrap';
 
-function EditPlayerModal(props) {
+const EditPlayerModal = (props) => {
   const [playerName, setPlayerName] = useState(props.player.name);
   const [playerPosition, setPlayerPosition] = useState(props.player.position);
 
   const handleSave = () => {
-    // Send an API request to update the player
-    // with new name and position
+    props.onSave({
+      id: props.player.id,
+      name: playerName,
+      position: playerPosition,
+    });
+  };
 
-    // Close the modal
-    props.onClose();
+  const handleCancel = () => {
+    props.onCancel();
   };
 
   return (
-    <Modal show={props.show} onHide={props.onClose}>
+    <Modal show={props.show} onHide={handleCancel}>
       <Modal.Header closeButton>
         <Modal.Title>Edit Player</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Form>
-          <Form.Group controlId="formPlayerName">
-            <Form.Label>Player Name</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter player name"
-              value={playerName}
-              onChange={(event) => setPlayerName(event.target.value)}
-            />
-          </Form.Group>
-          <Form.Group controlId="formPlayerPosition">
-            <Form.Label>Player Position</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter player position"
-              value={playerPosition}
-              onChange={(event) => setPlayerPosition(event.target.value)}
-            />
-          </Form.Group>
-        </Form>
+        <Form.Group controlId="playerName">
+          <Form.Label>Name:</Form.Label>
+          <Form.Control
+            type="text"
+            value={playerName}
+            onChange={(e) => setPlayerName(e.target.value)}
+          />
+        </Form.Group>
+        <Form.Group controlId="playerPosition">
+          <Form.Label>Position:</Form.Label>
+          <Form.Control
+            as="select"
+            value={playerPosition}
+            onChange={(e) => setPlayerPosition(e.target.value)}
+          >
+            <option value="QB">Quarterback</option>
+            <option value="RB">Running Back</option>
+            <option value="WR">Wide Receiver</option>
+            <option value="TE">Tight End</option>
+            <option value="K">Kicker</option>
+          </Form.Control>
+        </Form.Group>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={props.onClose}>
-          Close
+        <Button variant="secondary" onClick={handleCancel}>
+          Cancel
         </Button>
         <Button variant="primary" onClick={handleSave}>
-          Save Changes
+          Save
         </Button>
       </Modal.Footer>
     </Modal>
   );
-}
+};
+
+EditPlayerModal.propTypes = {
+  show: PropTypes.bool.isRequired,
+  player: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    name: PropTypes.string.isRequired,
+    position: PropTypes.string.isRequired,
+  }).isRequired,
+  onSave: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
+};
 
 export default EditPlayerModal;

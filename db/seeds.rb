@@ -1,7 +1,17 @@
-# This file should contain all the record creation needed to seed the database with its default values.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Examples:
-#
-#   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
-#   Character.create(name: 'Luke', movie: movies.first)
+require 'net/http'
+require 'json'
+
+uri = URI('https://api.sportsdata.io/v3/nfl/scores/json/Players?key=f96ee404946b4896b5691149c6e8e1bc')
+response = Net::HTTP.get(uri)
+players = JSON.parse(response)
+
+players.each do |player|
+  new_player = Player.new(
+    name: player['Name'],
+    position: player['Position'],
+    nflteam: player['Team'],
+    player_api_key: player['PlayerID']
+  )
+  new_player.save
+end
+
