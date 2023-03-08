@@ -18,6 +18,8 @@ import AddPlayerButton from './AddPlayerButton';
 import ConfirmAddPlayerModal from './ConfirmAddPlayerModal';
 import EditPlayerModal from './EditPlayerModal';
 import MaxPlayersWarning from './MaxPlayersWarning';
+import PlayerList from './PlayerList';
+import Team from './Team';
 
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
@@ -29,6 +31,7 @@ function App() {
   const [editingPlayer, setEditingPlayer] = useState(null);
   const [maxPlayersWarning, setMaxPlayersWarning] = useState(false);
   const [newName, setNewName] = useState("");
+  const [showPlayerList, setShowPlayerList] = useState(false);
  
  
   useEffect(() => {
@@ -52,15 +55,17 @@ function App() {
   }, [selectedTeam]);
 
   useEffect(() => {
-    // Fetch players 
-    const fetchPlayers = async () => {
-      if (selectedTeam) {
-        const response = await axios.get(`http://localhost:3000/players`);
+  const handleLoadAllPlayers = () => {
+    axios
+      .get("http://localhost:3000/players")
+      .then((response) => {
         setPlayers(response.data);
-      }
-    };
-    fetchPlayers();
-  },[]);
+      })
+      .catch((error) => console.log(error));
+  };
+  handleLoadAllPlayers()
+}, []);
+
 
   const handleLogin = async (username, password) => {
     // Send login request to server
@@ -80,7 +85,6 @@ function App() {
 
   const handleCreateTeam = async (name, currentUser) => {
     // Send create team request to server
-    const userID = currentUser.id
     console.log(currentUser)
     const response = await axios.post("http://localhost:3000/teams", { name, user_id: currentUser });
   
@@ -135,21 +139,9 @@ function App() {
     setSelectedTeam(team);
   };
 
-  const handleAddPlayer = async (player) => {
-    // Check if the team is at maximum capacity
-    if (players.length >= 15) {
-      setMaxPlayersWarning(true);
-      return;
-    }
-
-    // Save the player to the server
-    if (selectedTeam){
-    const response = await axios.post(`http://localhost:3000/teams/${selectedTeam.id}/players`, { player });
-    setPlayers([...players, response.data]);
-    }
-
-    // Close the add player modal
-    setAddingPlayer(null);
+  const handleAddPlayer = () => {
+    setShowPlayerList(true);
+    
   };
 
   const handlePlayerSearch = async (query) => {
@@ -185,34 +177,38 @@ function App() {
               <>
                 <Sidebar teams={teams} setTeams={setTeams} selectedTeam={selectedTeam} handleNewTeam={handleCreateTeam} handleSelectTeam={handleSelectTeam}/>
                 <main>
-                  <h1>My Teams</h1>
-                  <TeamList teams={teams}
-                    onSelectTeam={handleSelectTeam}
-                    onDeleteTeam={handleDeleteTeam}
-                    onEditTeam={handleEditTeam}
-                    onAddPlayer={handleAddPlayer} />
-                  <CreateTeamForm onCreateTeam={handleCreateTeam} currentUser={currentUser} onEditTeam={handleEditTeamName}/>
-                  {selectedTeam && (
-                    <>
-                      <h2>{selectedTeam.name}</h2>
-                      <SelectTeamForm teams={teams} onSelectTeam={handleSelectTeam} />
-                      <PlayerSearchForm onSearch={handlePlayerSearch} />
-                      {searchResults && (
-                        <PlayerSearchResult
-                          players={searchResults}
-                          onSelectPlayer={handleAddPlayer}
-                        />
-                      )}
-                      <TeamRoster
-                        players={players}
-                        onEditPlayer={handleEditPlayer}
-                        onDeletePlayer={handleDeletePlayer}
-                      />
-                      <MaxPlayersWarning players={players} />
-                    </>
-                  )}
-                </main>
+  <h1>My Teams</h1>
+  <TeamList teams={teams}
+            onSelectTeam={handleSelectTeam}
+            onDeleteTeam={handleDeleteTeam}
+            onEditTeam={handleEditTeam}
+            onAddPlayer={handleAddPlayer} />
+  <CreateTeamForm onCreateTeam={handleCreateTeam} currentUser={currentUser} onEditTeam={handleEditTeamName}/>
+  {selectedTeam && (
+    <>
+      <h2>{selectedTeam.name}</h2>
+      <SelectTeamForm teams={teams} onSelectTeam={handleSelectTeam} />
+      <MaxPlayersWarning players={players} />
+    </>
+  )}
+  {showPlayerList && (
+    <div className="player-container">
+      <PlayerSearchForm onPlayerSearch={handlePlayerSearch} />
+      <PlayerSearchResult
+        players={searchResults}
+        onSelectPlayer={setAddingPlayer}
+      />
+    </div>
+  )}
+  <div className="team-container">
+    {selectedTeam ? <Team team={selectedTeam} players={players} /> : null}
+    {showPlayerList ? <PlayerList players={players} /> : null}
+  </div>
+</main>
+
+                
               </>
+              
             ) : (
               <>
                 <LoginForm onLogin={handleLogin} />

@@ -1,15 +1,16 @@
 class PlayersController < ApplicationController
     def index
-      # Retrieve all players from the database
-      @players = Player.all
-  
-      # If position query param is provided, filter by position
-      if params[:position]
-        @players = @players.where(position: params[:position])
+        if params[:team_id]
+          @players = Team.find(params[:team_id]).players
+        elsif params[:search]
+          @players = Player.where("name LIKE ?", "%#{params[:search]}%")
+        else
+          @players = Player.all
+        end
+      
+        render json: @players
       end
-  
-      render json: @players
-    end
+      
   
     def show
       # Find player by id
@@ -17,5 +18,12 @@ class PlayersController < ApplicationController
   
       render json: @player
     end
+
+private
+
+def player_params
+    params.require(:cleaner).permit(team_id: [])
+end
+
   end
   

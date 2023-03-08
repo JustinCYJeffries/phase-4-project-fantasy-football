@@ -10,7 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_03_07_063657) do
+ActiveRecord::Schema.define(version: 2023_03_07_105544) do
+
+  create_table "player_teams", force: :cascade do |t|
+    t.integer "player_id", null: false
+    t.integer "team_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["player_id"], name: "index_player_teams_on_player_id"
+    t.index ["team_id"], name: "index_player_teams_on_team_id"
+  end
 
   create_table "player_weeks", force: :cascade do |t|
     t.integer "receiving_yards"
@@ -62,6 +71,8 @@ ActiveRecord::Schema.define(version: 2023_03_07_063657) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  add_foreign_key "player_teams", "players"
+  add_foreign_key "player_teams", "teams"
   add_foreign_key "player_weeks", "players"
   add_foreign_key "player_weeks", "weeks"
   add_foreign_key "players", "teams"
