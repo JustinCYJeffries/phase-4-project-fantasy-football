@@ -3,7 +3,7 @@ import PlayerSearchForm from './PlayerSearchForm';
 import PlayerSearchResult from './PlayerSearchResult';
 import MaxPlayersWarning from './MaxPlayersWarning';
 
-const CreateTeamForm = ({ onCreateTeam, currentUser, allPlayers, onEditTeam }) => {
+const CreateTeamForm = ({ onCreateTeam, currentUser, allPlayers, onEditTeam, selectedTeam }) => {
   const [name, setName] = useState('');
   const [roster, setRoster] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
@@ -47,13 +47,14 @@ const CreateTeamForm = ({ onCreateTeam, currentUser, allPlayers, onEditTeam }) =
       setRoster([]);
     }
   };
+  
 
   return (
     <form onSubmit={handleSubmit}>
       <h2>Create a new team</h2>
       <label>
         Team name:
-        <input type="text" value={name} onChange={handleNameChange} required />
+        <input type="text" value={name} onChange={handleNameChange} required ></input>
       </label>
       <PlayerSearchForm allPlayers={allPlayers} onSearchResults={handleSearchResults} onPositionFilter={handlePositionFilter} />
       <PlayerSearchResult results={searchResults} onSelectPlayer={handleSelectPlayer} positionFilter={positionFilter} />

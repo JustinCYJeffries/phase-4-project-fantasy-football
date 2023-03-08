@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_03_07_105544) do
+ActiveRecord::Schema.define(version: 2023_03_08_070247) do
 
   create_table "player_teams", force: :cascade do |t|
     t.integer "player_id", null: false
@@ -43,11 +43,9 @@ ActiveRecord::Schema.define(version: 2023_03_07_105544) do
     t.string "name"
     t.string "nflteam"
     t.string "position"
-    t.integer "team_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "player_api_key"
-    t.index ["team_id"], name: "index_players_on_team_id"
   end
 
   create_table "teams", force: :cascade do |t|
@@ -75,6 +73,5 @@ ActiveRecord::Schema.define(version: 2023_03_07_105544) do
   add_foreign_key "player_teams", "teams"
   add_foreign_key "player_weeks", "players"
   add_foreign_key "player_weeks", "weeks"
-  add_foreign_key "players", "teams"
   add_foreign_key "teams", "users"
 end

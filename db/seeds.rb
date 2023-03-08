@@ -34,9 +34,18 @@ end
   name = Faker::Name.name
   nflteam = NFL_TEAMS.sample
   position = SKILLED_POSITIONS.sample
-  team_id = rand(1..10)
   player_api_key = random_string(16)
-  Player.create(name: name, nflteam: nflteam, position: position, team_id: team_id, player_api_key: player_api_key)
+  Player.create(name: name, nflteam: nflteam, position: position, player_api_key: player_api_key)
 end
 
+10.times do 
+  name = Faker::Name.name
+  Team.create(name: name, user_id: User.first.id)
+end
 
+Team.all.each do |team|
+  15.times do
+    player = Player.all.sample
+    PlayerTeam.create(team_id: team.id, player_id: player.id)
+  end
+end

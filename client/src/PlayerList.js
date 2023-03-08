@@ -28,7 +28,9 @@ function PlayerList() {
       <input type="text" placeholder="Search Players" value={searchTerm} onChange={handleSearchTermChange} />
       <ul>
         {filteredPlayers.map((player) => (
-          <li key={player.id}>{player.Name}</li>
+            
+          <li key={player.id}>{player.name}</li>
+          
         ))}
       </ul>
     </div>

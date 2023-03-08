@@ -183,7 +183,7 @@ function App() {
             onDeleteTeam={handleDeleteTeam}
             onEditTeam={handleEditTeam}
             onAddPlayer={handleAddPlayer} />
-  <CreateTeamForm onCreateTeam={handleCreateTeam} currentUser={currentUser} onEditTeam={handleEditTeamName}/>
+  <CreateTeamForm selectedTeam={selectedTeam} onCreateTeam={handleCreateTeam} currentUser={currentUser} onEditTeam={handleEditTeamName}/>
   {selectedTeam && (
     <>
       <h2>{selectedTeam.name}</h2>
