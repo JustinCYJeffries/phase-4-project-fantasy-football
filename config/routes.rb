@@ -8,4 +8,6 @@ Rails.application.routes.draw do
   resources :players, only: [:index, :create]
   resources :player_teams
   resources :sessions, only: [:create, :destroy]
+  delete '/sessions', to: 'sessions#destroy'
+
 end

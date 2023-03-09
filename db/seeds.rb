@@ -38,14 +38,25 @@ end
   Player.create(name: name, nflteam: nflteam, position: position, player_api_key: player_api_key)
 end
 
-10.times do 
-  name = Faker::Name.name
-  Team.create(name: name, user_id: User.first.id)
+
+
+# Create users
+User.create(username: 'user1', password: 'password')
+User.create(username: 'user2', password: 'password')
+
+# Create teams for each user
+user1 = User.find_by(username: 'user1')
+user2 = User.find_by(username: 'user2')
+
+10.times do
+  Team.create(name: Faker::Sports::Football.team, user_id: user1.id)
+  Team.create(name: Faker::Sports::Football.team, user_id: user2.id)
 end
 
+# Create players and assign them to teams
 Team.all.each do |team|
   15.times do
-    player = Player.all.sample
-    PlayerTeam.create(team_id: team.id, player_id: player.id)
+    player = Player.create(name: Faker::Sports::Football.player, nflteam: NFL_TEAMS.sample, position: SKILLED_POSITIONS.sample)
+    player_team = PlayerTeam.create(player_id: player.id, team_id: team.id)
   end
 end

@@ -1,18 +1,10 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-function PlayerList({onAddClick}) {
-  const [players, setPlayers] = useState([]);
+function PlayerList({onAddClick, players}) {
+  
  
 
-  useEffect(() => {
-    const fetchPlayers = async () => {
-      const response = await axios.get('http://localhost:3000/players');
-      setPlayers(response.data);
-    };
-
-    fetchPlayers();
-  }, []);
 
 
 

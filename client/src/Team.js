@@ -1,22 +1,37 @@
 import React from 'react';
 import Player from './Player';
+import { useState } from 'react';
 
-function Team({ team, players, onAddPlayerToTeam, onRemovePlayerFromTeam }) {
+function Team({ team, players, onRemovePlayerFromTeam, onEditTeam }) {
+  const [name, setName] = useState(team.name);
 
+  const handleNameChange = (event) => {
+    const newName = event.target.value;
+    setName(newName);
+    
+    
+  };
 
-  const handleAddPlayer = (playerId) => {
-    onAddPlayerToTeam(playerId, team.id);
-  }
+  const handleSubmit = () => {
+   
+    onEditTeam(team.id, name);
+    console.log(name, team.id)
+  };
+
 
   const handleRemovePlayer = (playerId) => {
     onRemovePlayerFromTeam(playerId, team.id);
-  }
+  };
 
   return (
     <div className="team">
       <h2>{team.name}</h2>
+      <form>
+        <input type="text" value={name} onChange={handleNameChange} required />
+      </form>
+      <button type="submit" onClick={handleSubmit}>Edit Team Name</button>
       <ul className="team-players">
-        {players.map(player => (
+        {players.map((player) => (
           <Player
             key={`${player.id}${team.id}`}
             player={player}
@@ -24,12 +39,6 @@ function Team({ team, players, onAddPlayerToTeam, onRemovePlayerFromTeam }) {
           />
         ))}
       </ul>
-      <select onChange={(e) => handleAddPlayer(e.target.value)}>
-        <option value="">Select a player to add</option>
-        {players.filter(player => player.team_id === null).map(player => (
-          <option key={player.id} value={player.id}>{player.name}</option>
-        ))}
-      </select>
     </div>
   );
 }

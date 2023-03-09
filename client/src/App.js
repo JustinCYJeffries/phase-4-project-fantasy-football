@@ -12,6 +12,7 @@ import CreateTeamForm from './CreateTeamForm';
 import SelectTeamForm from './SelectTeamForm';
 import TeamRoster from './TeamRoster';
 import LoginForm from './LoginForm';
+import Logout from './Logout';
 import SignupForm from './SignupForm';
 import PlayerSearchForm from './PlayerSearchForm';
 import PlayerSearchResult from './PlayerSearchResult';
@@ -34,6 +35,7 @@ function App() {
   const [editingPlayer, setEditingPlayer] = useState(null);
   const [maxPlayersWarning, setMaxPlayersWarning] = useState(false);
   const [newName, setNewName] = useState("");
+  const [showResults, setShowResults] = useState(false);
   const [showPlayerList, setShowPlayerList] = useState(false);
   const navigate = useNavigate();
   axios.defaults.withCredentials = true
@@ -84,8 +86,18 @@ function App() {
     const response = await axios.post("http://localhost:3000/sessions", { username, password });
 
     // Update current user state
-    Cookies.set("user", response.data)
+    Cookies.set("user", response.data,  { sameSite: 'none', secure: true })
     setCurrentUser(response.data);
+  };
+
+  const handleLogout = async (username, password) => {
+    // Send login request to server
+    const response = await axios.delete("http://localhost:3000/sessions", { username, password });
+
+    // Update current user state
+    Cookies.remove("user",  { sameSite: 'none', secure: true })
+    setCurrentUser(null);
+    navigate("/");
   };
 
   const handleSignup = async (username, password) => {
@@ -118,16 +130,18 @@ function App() {
     }
   };
 
-  const handleEditTeam = async (teamId) => {
+  const handleEditTeam = async (teamId, thisName ) => {
+    
     // Send edit team request to server
-    const response = await axios.patch(`http://localhost:3000/teams/${teamId.id}`, { team:{name: newName} });
+    const response = await axios.patch(`http://localhost:3000/teams/${teamId}`, { team:{name: thisName} });
 
     // Update teams state
     setTeams((prevTeams) => {
-      const index = prevTeams.findIndex((team) => team.id === teamId.id);
+      const index = prevTeams.findIndex((team) => team.id === teamId);
       const updatedTeam = { ...prevTeams[index], name: response.data.name };
       return [...prevTeams.slice(0, index), updatedTeam, ...prevTeams.slice(index + 1)];
     });
+    setSelectedTeam(null)
   };
 
 
@@ -157,6 +171,7 @@ function App() {
 
   const handleShowPlayerList = ()=> {
     setShowPlayerList(true);
+    setShowResults(false)
   }
 
   const handleAddPlayer = async (player) => {
@@ -167,23 +182,22 @@ function App() {
 
   const handleNewPlayer = async (player) => {
     const response = await axios.post("http://localhost:3000/players", { player:{name: player.name, position: player.position, nflteam: player.team }});
-  setTotalPlayers([...totalPlayers, response.data]);
-    
+   setTotalPlayers([...totalPlayers, response.data]);
+    console.log(totalPlayers)
 
   };
 
-  const handlePlayerSearch = async (query) => {
+  const handlePlayerSearch = async (term, position) => {
     // Send search request to server
-    const response = await axios.get(`http://localhost:3000/players=${query}`);
+    const response = await axios.get(`http://localhost:3000/players?term=${term}&position=${position}`);
     const playerList = response.data;
 
     // Filter players based on search query
-    const filteredPlayers = playerList.filter((player) =>
-      player.Name.toLowerCase().includes(query.toLowerCase())
-    );
+    
 
     // Update filtered players state
-    setSearchResults(filteredPlayers);
+    setSearchResults(playerList);
+    setShowResults(true)
   };
 
 
@@ -198,11 +212,13 @@ function App() {
 
   return (
     <div className="App">
+      <h2>Fantasy Football Team Builder</h2>
         <Routes>
+          <Route exact path="/logout" element= {<Logout onLogout={handleLogout} />}/>
           <Route exact path="/" element=
             {currentUser ? (
               <>
-
+               <a href='/logout'>Logout</a>
 
                 <div className="columns-container">
                   <div className='column1'>
@@ -219,7 +235,7 @@ function App() {
 </div>
 <div className='column3'>
   <div className="team-container">
-    {selectedTeam ? <Team team={selectedTeam} players={players} onRemovePlayerFromTeam={handleDeletePlayer} /> : null}
+    {selectedTeam ? <Team team={selectedTeam} players={players} onRemovePlayerFromTeam={handleDeletePlayer} onEditTeam={handleEditTeam}/> : null}
 
   </div>
   </div>
@@ -227,7 +243,7 @@ function App() {
   {showPlayerList && (
     <div className="player-container">
       <PlayerSearchForm onPlayerSearch={handlePlayerSearch} />
-      {searchResults ? <PlayerList players={totalPlayers} onAddClick={handleAddPlayer}/> : <PlayerSearchResult players={searchResults} onAddClick={handleAddPlayer} />}
+      {showResults ?  <PlayerSearchResult players={searchResults} onAddClick={handleAddPlayer} /> : <PlayerList players={totalPlayers} onAddClick={handleAddPlayer}/> }
 
     </div>
   )}

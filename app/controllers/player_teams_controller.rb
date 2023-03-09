@@ -1,5 +1,6 @@
 class PlayerTeamsController < ApplicationController
-  before_action :set_team
+    rescue_from ActiveRecord::RecordNotUnique, with: :record_not_unique
+    before_action :set_team
   def create
     @player_team = @team.player_teams.new(player_id: params[:player_id])
 
@@ -24,5 +25,8 @@ class PlayerTeamsController < ApplicationController
 
   def player_team_params
     params.require(:player_id)
+  end
+  def record_not_unique
+    render json: { error: 'Player is already on this team' }, status: :unprocessable_entity
   end
 end

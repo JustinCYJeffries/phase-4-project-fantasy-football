@@ -2,8 +2,10 @@ class PlayersController < ApplicationController
   def index
     if params[:team_id]
       @players = Team.find(params[:team_id]).players
-    elsif params[:search]
-      @players = Player.where("name LIKE ?", "%#{params[:search]}%")
+    elsif params[:term]
+        @players = Player.all
+        @players = @players.where("name LIKE ?", "%#{params[:term]}%") unless params[:term].blank?
+        @players = @players.where(position: params[:position]) unless params[:position].blank?
     else
       @players = Player.all
     end

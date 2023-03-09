@@ -6,8 +6,8 @@ const PlayerSearchResult = ({ players, onAddClick }) => {
       <h2>Search Results</h2>
       <ul>
         {players && players.map((player) => (
-          <li key={player.PlayerID}>
-            {player.FirstName} {player.LastName} ({player.Position})
+          <li key={player.id}>
+            {player.name}  ({player.position})
             <button onClick={() => onAddClick(player)}>Add to Team</button>
           </li>
         ))}
