@@ -28,6 +28,7 @@ function App() {
   const [teams, setTeams] = useState([]);
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [players, setPlayers] = useState([]);
+  const [totalPlayers, setTotalPlayers] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [addingPlayer, setAddingPlayer] = useState(null);
   const [editingPlayer, setEditingPlayer] = useState(null);
@@ -70,7 +71,7 @@ function App() {
     axios
       .get("http://localhost:3000/players")
       .then((response) => {
-        setPlayers(response.data);
+        setTotalPlayers(response.data);
       })
       .catch((error) => console.log(error));
   };
@@ -166,9 +167,8 @@ function App() {
 
   const handleNewPlayer = async (player) => {
     const response = await axios.post("http://localhost:3000/players", { player:{name: player.name, position: player.position, nflteam: player.team }});
- 
-  setPlayers([...players, response.data]);
-
+  setTotalPlayers([...totalPlayers, response.data]);
+    
 
   };
 
@@ -227,7 +227,7 @@ function App() {
   {showPlayerList && (
     <div className="player-container">
       <PlayerSearchForm onPlayerSearch={handlePlayerSearch} />
-      {searchResults ? <PlayerList players={players} onAddClick={handleAddPlayer}/> : <PlayerSearchResult players={searchResults} onAddClick={handleAddPlayer} />}
+      {searchResults ? <PlayerList players={totalPlayers} onAddClick={handleAddPlayer}/> : <PlayerSearchResult players={searchResults} onAddClick={handleAddPlayer} />}
 
     </div>
   )}
