@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-function PlayerList() {
+function PlayerList({onAddClick}) {
   const [players, setPlayers] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
+ 
 
   useEffect(() => {
     const fetchPlayers = async () => {
@@ -14,22 +14,17 @@ function PlayerList() {
     fetchPlayers();
   }, []);
 
-  const handleSearchTermChange = (event) => {
-    setSearchTerm(event.target.value);
-  };
 
-  const filteredPlayers = players.filter((player) =>
-    player.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+
 
   return (
     <div>
-      <h2>Players</h2>
-      <input type="text" placeholder="Search Players" value={searchTerm} onChange={handleSearchTermChange} />
+      <h2>All Players</h2>
+     
       <ul>
-        {filteredPlayers.map((player) => (
+        {players.map((player) => (
             
-          <li key={player.id}>{player.name}</li>
+          <li key={player.id}>{player.name} {player.position}  <button onClick={() => onAddClick(player)}>Add Player</button></li>
           
         ))}
       </ul>

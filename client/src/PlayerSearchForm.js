@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 const PlayerSearchForm = (props) => {
-  const { onSearch } = props;
+  const { onPlayerSearch } = props;
   const [searchTerm, setSearchTerm] = useState('');
   const [positionFilter, setPositionFilter] = useState('');
 
@@ -15,7 +15,7 @@ const PlayerSearchForm = (props) => {
 
   const handleSearchSubmit = (event) => {
     event.preventDefault();
-    onSearch(searchTerm, positionFilter);
+    onPlayerSearch(searchTerm, positionFilter);
   };
 
   return (

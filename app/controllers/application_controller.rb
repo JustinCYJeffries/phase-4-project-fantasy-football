@@ -1,9 +1,6 @@
 class ApplicationController < ActionController::API
-
-
     helper_method :current_user
-   
-  
+    
     private
   
     def current_user

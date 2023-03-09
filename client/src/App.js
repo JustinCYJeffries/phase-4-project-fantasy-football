@@ -52,7 +52,7 @@ function App() {
       }
     };
     fetchPlayers();
-  }, [selectedTeam]);
+  }, [selectedTeam, ]);
 
   useEffect(() => {
   const handleLoadAllPlayers = () => {
@@ -130,6 +130,7 @@ function App() {
     }
   };
   
+  
   const handleEditTeamName = (name) =>{
       setNewName(name)
   };
@@ -146,7 +147,7 @@ function App() {
 
   const handlePlayerSearch = async (query) => {
     // Send search request to server
-    const response = await axios.get(`https://api.sportsdata.io/v3/nfl/scores/json/Players?key=f96ee404946b4896b5691149c6e8e1bc&position=${query}`);
+    const response = await axios.get(`http://localhost:3000/players=${query}`);
     const playerList = response.data;
   
     // Filter players based on search query
@@ -175,36 +176,39 @@ function App() {
           <Route exact path="/" element=
             {currentUser ? (
               <>
-                <Sidebar teams={teams} setTeams={setTeams} selectedTeam={selectedTeam} handleNewTeam={handleCreateTeam} handleSelectTeam={handleSelectTeam}/>
-                <main>
+                
+                
+                <div className="columns-container">
+                  <div className='column1'>
   <h1>My Teams</h1>
   <TeamList teams={teams}
             onSelectTeam={handleSelectTeam}
             onDeleteTeam={handleDeleteTeam}
-            onEditTeam={handleEditTeam}
-            onAddPlayer={handleAddPlayer} />
-  <CreateTeamForm selectedTeam={selectedTeam} onCreateTeam={handleCreateTeam} currentUser={currentUser} onEditTeam={handleEditTeamName}/>
-  {selectedTeam && (
-    <>
-      <h2>{selectedTeam.name}</h2>
-      <SelectTeamForm teams={teams} onSelectTeam={handleSelectTeam} />
-      <MaxPlayersWarning players={players} />
-    </>
-  )}
+            
+            onAddPlayer={handleAddPlayer}
+            selectedTeam={selectedTeam} onCreateTeam={handleCreateTeam} currentUser={currentUser} onEditTeam={handleEditTeamName} />
+  
+  
+ 
+</div>
+<div className='column3'>
+  <div className="team-container">
+    {selectedTeam ? <Team team={selectedTeam} players={players} /> : null}
+    
+  </div>
+  </div>
+<div className='column2'>
   {showPlayerList && (
     <div className="player-container">
       <PlayerSearchForm onPlayerSearch={handlePlayerSearch} />
-      <PlayerSearchResult
-        players={searchResults}
-        onSelectPlayer={setAddingPlayer}
-      />
+      {searchResults ? <PlayerList players={players} onAddClick={handleAddPlayer}/> : <PlayerSearchResult players={searchResults} onAddClick={handleAddPlayer} />}
+      
     </div>
   )}
-  <div className="team-container">
-    {selectedTeam ? <Team team={selectedTeam} players={players} /> : null}
-    {showPlayerList ? <PlayerList players={players} /> : null}
   </div>
-</main>
+ 
+  </div>
+
 
                 
               </>

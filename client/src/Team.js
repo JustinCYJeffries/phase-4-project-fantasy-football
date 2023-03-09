@@ -2,7 +2,7 @@ import React from 'react';
 import Player from './Player';
 
 function Team({ team, players, onAddPlayerToTeam, onRemovePlayerFromTeam }) {
-  const teamPlayers = players.filter(player => player.team_id === team.id);
+  
 
   const handleAddPlayer = (playerId) => {
     onAddPlayerToTeam(playerId, team.id);
@@ -18,7 +18,7 @@ function Team({ team, players, onAddPlayerToTeam, onRemovePlayerFromTeam }) {
       <ul className="team-players">
         {players.map(player => (
           <Player
-            key={player.id}
+            key={`${player.id}${team.id}`}
             player={player}
             onRemovePlayer={() => handleRemovePlayer(player.id)}
           />
