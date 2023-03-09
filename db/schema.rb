@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_03_08_070247) do
+ActiveRecord::Schema.define(version: 2023_03_09_063238) do
 
   create_table "player_teams", force: :cascade do |t|
     t.integer "player_id", null: false
@@ -19,24 +19,6 @@ ActiveRecord::Schema.define(version: 2023_03_08_070247) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["player_id"], name: "index_player_teams_on_player_id"
     t.index ["team_id"], name: "index_player_teams_on_team_id"
-  end
-
-  create_table "player_weeks", force: :cascade do |t|
-    t.integer "receiving_yards"
-    t.integer "receiving_td"
-    t.integer "receptions"
-    t.integer "rushing_yards"
-    t.integer "rushing_td"
-    t.integer "passing_yards"
-    t.integer "passing_td"
-    t.integer "passing_interceptions"
-    t.integer "two_pt_conversion"
-    t.integer "player_id", null: false
-    t.integer "week_id", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["player_id"], name: "index_player_weeks_on_player_id"
-    t.index ["week_id"], name: "index_player_weeks_on_week_id"
   end
 
   create_table "players", force: :cascade do |t|
@@ -63,15 +45,7 @@ ActiveRecord::Schema.define(version: 2023_03_08_070247) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
-  create_table "weeks", force: :cascade do |t|
-    t.integer "number"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-  end
-
   add_foreign_key "player_teams", "players"
   add_foreign_key "player_teams", "teams"
-  add_foreign_key "player_weeks", "players"
-  add_foreign_key "player_weeks", "weeks"
   add_foreign_key "teams", "users"
 end

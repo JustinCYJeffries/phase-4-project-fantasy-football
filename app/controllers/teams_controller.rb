@@ -2,7 +2,7 @@ class TeamsController < ApplicationController
   before_action :set_team, only: [:show, :update, :destroy]
 
   def index
-    @teams = Team.all
+    @teams = current_user.teams.all
     render json: @teams
   end
 
@@ -11,7 +11,7 @@ class TeamsController < ApplicationController
   end
 
   def create
-    @team = Team.new(team_params)
+    @team = current_user.teams.new(team_params)
 
     if @team.save
       render json: @team, status: :created, location: @team
@@ -36,7 +36,7 @@ class TeamsController < ApplicationController
   private
 
   def set_team
-    @team = Team.find(params[:id])
+    @team = current_user.teams.find(params[:id])
   end
 
   def team_params

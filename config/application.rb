@@ -34,5 +34,14 @@ module Phase4ProjectFantasyFootball
 
     # Don't generate system test files.
     config.generators.system_tests = nil
+    config.middleware.insert_before 0, Rack::Cors do
+      allow do
+        origins "http://localhost:3001" # The origin of your React frontend
+        resource "*", # The resources you want to allow access to
+          headers: :any,
+          methods: [:get, :post, :put, :patch, :delete, :options],
+          credentials: true
+      end
+    end
   end
 end

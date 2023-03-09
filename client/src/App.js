@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 import axios from "axios";
+import Cookies from 'js-cookie';
 
 import Header from './Header';
 import Auth from './Auth';
@@ -32,8 +33,17 @@ function App() {
   const [maxPlayersWarning, setMaxPlayersWarning] = useState(false);
   const [newName, setNewName] = useState("");
   const [showPlayerList, setShowPlayerList] = useState(false);
- 
- 
+  const navigate = useNavigate();
+  axios.defaults.withCredentials = true
+
+  useEffect(() => {
+    // Check for session token cookie on page load
+    const userCookie = Cookies.get('user');
+    if (userCookie) {
+      setCurrentUser(userCookie);
+    }
+  }, []);
+
   useEffect(() => {
     // Fetch teams when the component mounts
     const fetchTeams = async () => {
@@ -69,9 +79,10 @@ function App() {
 
   const handleLogin = async (username, password) => {
     // Send login request to server
-    const response = await axios.post("http://localhost:3000/login", { username, password });
+    const response = await axios.post("http://localhost:3000/sessions", { username, password });
 
     // Update current user state
+    Cookies.set("user", response.data)
     setCurrentUser(response.data);
   };
 
@@ -81,13 +92,14 @@ function App() {
 
     // Update current user state
     setCurrentUser(response.data);
+    navigate("/");
   };
 
   const handleCreateTeam = async (name, currentUser) => {
     // Send create team request to server
     console.log(currentUser)
     const response = await axios.post("http://localhost:3000/teams", { name, user_id: currentUser });
-  
+
     // Update teams state
     setTeams([...teams, response.data]);
   };
@@ -107,7 +119,7 @@ function App() {
   const handleEditTeam = async (teamId) => {
     // Send edit team request to server
     const response = await axios.patch(`http://localhost:3000/teams/${teamId.id}`, { team:{name: newName} });
-    
+
     // Update teams state
     setTeams((prevTeams) => {
       const index = prevTeams.findIndex((team) => team.id === teamId.id);
@@ -115,8 +127,8 @@ function App() {
       return [...prevTeams.slice(0, index), updatedTeam, ...prevTeams.slice(index + 1)];
     });
   };
-  
-  
+
+
   const handleEditPlayer = async (updatedPlayer) => {
     try {
       const response = await axios.patch(`http://localhost:3000/players/${updatedPlayer.id}`, updatedPlayer);
@@ -129,8 +141,9 @@ function App() {
       console.error(error);
     }
   };
-  
-  
+
+
+
   const handleEditTeamName = (name) =>{
       setNewName(name)
   };
@@ -142,23 +155,23 @@ function App() {
 
   const handleAddPlayer = () => {
     setShowPlayerList(true);
-    
+
   };
 
   const handlePlayerSearch = async (query) => {
     // Send search request to server
     const response = await axios.get(`http://localhost:3000/players=${query}`);
     const playerList = response.data;
-  
+
     // Filter players based on search query
     const filteredPlayers = playerList.filter((player) =>
       player.Name.toLowerCase().includes(query.toLowerCase())
     );
-  
+
     // Update filtered players state
     setSearchResults(filteredPlayers);
   };
-  
+
 
 
   const handleDeletePlayer = async (player) => {
@@ -171,30 +184,29 @@ function App() {
 
   return (
     <div className="App">
-      <Router>
         <Routes>
           <Route exact path="/" element=
             {currentUser ? (
               <>
-                
-                
+
+
                 <div className="columns-container">
                   <div className='column1'>
   <h1>My Teams</h1>
   <TeamList teams={teams}
             onSelectTeam={handleSelectTeam}
             onDeleteTeam={handleDeleteTeam}
-            
+
             onAddPlayer={handleAddPlayer}
             selectedTeam={selectedTeam} onCreateTeam={handleCreateTeam} currentUser={currentUser} onEditTeam={handleEditTeamName} />
-  
-  
- 
+
+
+
 </div>
 <div className='column3'>
   <div className="team-container">
     {selectedTeam ? <Team team={selectedTeam} players={players} /> : null}
-    
+
   </div>
   </div>
 <div className='column2'>
@@ -202,17 +214,17 @@ function App() {
     <div className="player-container">
       <PlayerSearchForm onPlayerSearch={handlePlayerSearch} />
       {searchResults ? <PlayerList players={players} onAddClick={handleAddPlayer}/> : <PlayerSearchResult players={searchResults} onAddClick={handleAddPlayer} />}
-      
+
     </div>
   )}
   </div>
- 
+
   </div>
 
 
-                
+
               </>
-              
+
             ) : (
               <>
                 <LoginForm onLogin={handleLogin} />
@@ -223,7 +235,6 @@ function App() {
             <SignupForm onSignup={handleSignup} />
           }/>
         </Routes>
-      </Router>
     </div>
   );
 }
