@@ -2,7 +2,7 @@ import React from 'react';
 import Player from './Player';
 
 function Team({ team, players, onAddPlayerToTeam, onRemovePlayerFromTeam }) {
-  
+
 
   const handleAddPlayer = (playerId) => {
     onAddPlayerToTeam(playerId, team.id);
@@ -20,7 +20,7 @@ function Team({ team, players, onAddPlayerToTeam, onRemovePlayerFromTeam }) {
           <Player
             key={`${player.id}${team.id}`}
             player={player}
-            onRemovePlayer={() => handleRemovePlayer(player.id)}
+            onDeleteClick={() => handleRemovePlayer(player.id)}
           />
         ))}
       </ul>

@@ -154,14 +154,19 @@ function App() {
     setSelectedTeam(team);
   };
 
-  const handleAddPlayer = () => {
+  const handleShowPlayerList = ()=> {
     setShowPlayerList(true);
+  }
 
+  const handleAddPlayer = async (player) => {
+    
+    const response = await axios.post(`http://localhost:3000/teams/${selectedTeam.id}/player_teams`, {player_id: player.id});
+    setPlayers(response.data);
   };
 
   const handleNewPlayer = async (player) => {
     const response = await axios.post("http://localhost:3000/players", { player:{name: player.name, position: player.position, nflteam: player.team }});
-    setPlayers(response.data);
+    
 
 
   };
@@ -182,12 +187,12 @@ function App() {
 
 
 
-  const handleDeletePlayer = async (player) => {
+  const handleDeletePlayer = async (player_id, team_id) => {
     // Send delete player request to server
-    await axios.delete(`http://localhost:3000/players/${player.id}`);
+    await axios.delete(`http://localhost:3000/teams/${team_id}/player_teams/${player_id}`);
 
     // Remove player from players state
-    setPlayers(players.filter((p) => p.id !== player.id));
+    setPlayers(players.filter((p) => p.id !== player_id));
   };
 
   return (
@@ -205,7 +210,7 @@ function App() {
             onSelectTeam={handleSelectTeam}
             onDeleteTeam={handleDeleteTeam}
 
-            onAddPlayer={handleAddPlayer}
+            onAddPlayer={handleShowPlayerList}
             selectedTeam={selectedTeam} onCreateTeam={handleCreateTeam} currentUser={currentUser} onEditTeam={handleEditTeamName} />
 
 
@@ -213,7 +218,7 @@ function App() {
 </div>
 <div className='column3'>
   <div className="team-container">
-    {selectedTeam ? <Team team={selectedTeam} players={players} /> : null}
+    {selectedTeam ? <Team team={selectedTeam} players={players} onRemovePlayerFromTeam={handleDeletePlayer} /> : null}
 
   </div>
   </div>

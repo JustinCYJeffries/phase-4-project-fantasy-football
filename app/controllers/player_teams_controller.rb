@@ -1,29 +1,28 @@
 class PlayerTeamsController < ApplicationController
-    def index
-      @player_teams = PlayerTeam.all
-      render json: @player_teams, status: :ok
-    end
-  
-    def create
-      @player_team = PlayerTeam.new(player_team_params)
-  
-      if @player_team.save
-        render json: @player_team, status: :created
-      else
-        render json: @player_team.errors, status: :unprocessable_entity
-      end
-    end
-  
-    def destroy
-      @player_team = PlayerTeam.find(params[:id])
-      @player_team.destroy
-      head :no_content
-    end
-  
-    private
-  
-    def player_team_params
-      params.require(:player_team).permit(:player_id, :team_id)
+  before_action :set_team
+  def create
+    @player_team = @team.player_teams.new(player_id: params[:player_id])
+
+    if @player_team.save
+      render json: @team.reload.players, status: :created
+    else
+      render json: @player_team.errors, status: :unprocessable_entity
     end
   end
-  
+
+  def destroy
+    @player_team = @team.player_teams.find_by(player_id: params[:id])
+    @player_team.destroy
+    head :no_content
+  end
+
+  private
+
+  def set_team
+    @team = current_user.teams.find(params[:team_id])
+  end
+
+  def player_team_params
+    params.require(:player_id)
+  end
+end
