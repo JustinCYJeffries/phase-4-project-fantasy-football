@@ -21,6 +21,7 @@ import EditPlayerModal from './EditPlayerModal';
 import MaxPlayersWarning from './MaxPlayersWarning';
 import PlayerList from './PlayerList';
 import Team from './Team';
+import CreatePlayerForm from './CreatePlayerForm';
 
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
@@ -158,6 +159,13 @@ function App() {
 
   };
 
+  const handleNewPlayer = async (player) => {
+    const response = await axios.post("http://localhost:3000/players", { player:{name: player.name, position: player.position, nflteam: player.team }});
+    setPlayers(response.data);
+
+
+  };
+
   const handlePlayerSearch = async (query) => {
     // Send search request to server
     const response = await axios.get(`http://localhost:3000/players=${query}`);
@@ -217,6 +225,9 @@ function App() {
 
     </div>
   )}
+  </div>
+  <div className='column2'>
+    <CreatePlayerForm onCreateNewPlayer={handleNewPlayer} />
   </div>
 
   </div>
