@@ -39,7 +39,7 @@ function AddPlayerForm({onCreateNewPlayer}) {
     // Clear the form
     setName('');
     setPosition('QB');
-    setTeam('');
+    setTeam('ARI');
   };
 
   return (

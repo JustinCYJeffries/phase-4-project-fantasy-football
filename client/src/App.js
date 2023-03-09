@@ -63,7 +63,7 @@ function App() {
       }
     };
     fetchPlayers();
-  }, [selectedTeam, ]);
+  }, [selectedTeam ]);
 
   useEffect(() => {
   const handleLoadAllPlayers = () => {
@@ -166,7 +166,8 @@ function App() {
 
   const handleNewPlayer = async (player) => {
     const response = await axios.post("http://localhost:3000/players", { player:{name: player.name, position: player.position, nflteam: player.team }});
-    
+ 
+  setPlayers([...players, response.data]);
 
 
   };
