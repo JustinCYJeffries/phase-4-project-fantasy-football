@@ -25,3 +25,30 @@ code {
 .column3 {
   flex: 1;
 }
+.error-message-popup {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #f44336;
+  color: #fff;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+}
+
+.dismiss-button {
+  background-color: #fff;
+  color: #f44336;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: bold;
+  margin-top: 16px;
+  cursor: pointer;
+}
+
+.dismiss-button:hover {
+  background-color: #f44336;
+  color: #fff;
+}

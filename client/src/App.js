@@ -3,10 +3,10 @@ import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-route
 import axios from "axios";
 import Cookies from 'js-cookie';
 
-import Header from './Header';
-import Auth from './Auth';
-import PrivateRoute from './PrivateRoute';
-import Sidebar from './Sidebar';
+
+
+
+
 import TeamList from './TeamList';
 import CreateTeamForm from './CreateTeamForm';
 import SelectTeamForm from './SelectTeamForm';
@@ -169,6 +169,10 @@ function App() {
     setShowResults(false)
   }
 
+  const handleDismiss = ()=> {
+    setError(null)
+  }
+
   const handleAddPlayer = async (player) => {
     try {
       const response = await axios.post(`http://localhost:3000/teams/${selectedTeam.id}/player_teams`, {player_id: player.id});
@@ -219,7 +223,7 @@ function App() {
   return (
     <div className="App">
       <h2>Fantasy Football Team Builder</h2>
-        <ErrorMessage message={error} />
+        {error ? <ErrorMessage message={error} handleDismiss={handleDismiss} /> : null}
         <Routes>
           <Route exact path="/logout" element= {<Logout onLogout={handleLogout} />}/>
           <Route exact path="/" element=
