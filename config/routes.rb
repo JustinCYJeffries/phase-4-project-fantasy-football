@@ -3,7 +3,7 @@ Rails.application.routes.draw do
   resources :sessions, only: [:create, :destroy]
   resources :teams do
     resources :players
-    resources :player_teams, only: [:index, :create, :destroy]
+    resources :player_teams, only: [:index, :create, :destroy, :update]
   end
   resources :players, only: [:index, :create]
   resources :player_teams

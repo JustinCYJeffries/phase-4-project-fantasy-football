@@ -1,7 +1,7 @@
 class PlayersController < ApplicationController
   def index
     if params[:team_id]
-      @players = Team.find(params[:team_id]).players
+        @players = Team.find(params[:team_id]).players.select('players.*, player_teams.starter')
     elsif params[:term]
         @players = Player.all
         @players = @players.where("name LIKE ?", "%#{params[:term]}%") unless params[:term].blank?

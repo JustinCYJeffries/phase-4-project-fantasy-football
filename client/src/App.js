@@ -66,7 +66,7 @@ function App() {
       }
     };
     fetchPlayers();
-  }, [selectedTeam ]);
+  }, [selectedTeam]);
 
   useEffect(() => {
   const handleLoadAllPlayers = () => {
@@ -146,18 +146,6 @@ function App() {
   };
 
 
-  const handleEditPlayer = async (updatedPlayer) => {
-    try {
-      const response = await axios.patch(`http://localhost:3000/players/${updatedPlayer.id}`, updatedPlayer);
-      const updatedPlayers = players.map((player) =>
-        player.id === response.data.id ? response.data : player
-      );
-      setPlayers(updatedPlayers);
-      setEditingPlayer(null);
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
 
 
@@ -211,6 +199,13 @@ function App() {
     setPlayers(players.filter((p) => p.id !== player_id));
   };
 
+  const handleMakeStarter = async (player_id, team_id) => {
+    await axios.patch(`http://localhost:3000/teams/${team_id}/player_teams/${player_id}`, {starter: 1});
+  };
+  const handleBenchStarter = async (player_id, team_id) => {
+    await axios.patch(`http://localhost:3000/teams/${team_id}/player_teams/${player_id}`, {starter: 0});
+  };
+
   return (
     <div className="App">
       <h2>Fantasy Football Team Builder</h2>
@@ -236,7 +231,7 @@ function App() {
 </div>
 <div className='column3'>
   <div className="team-container">
-    {selectedTeam ? <Team team={selectedTeam} players={players} onRemovePlayerFromTeam={handleDeletePlayer} onEditTeam={handleEditTeam}/> : null}
+    {selectedTeam ? <Team team={selectedTeam} players={players} onRemovePlayerFromTeam={handleDeletePlayer} onMakeTeamStarter={handleMakeStarter} onEditTeam={handleEditTeam} onBenchTeamStarter={handleBenchStarter}/> : null}
 
   </div>
   </div>

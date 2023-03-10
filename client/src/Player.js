@@ -1,13 +1,29 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-const Player = ({ player,  onDeleteClick, onMakeStarter }) => {
-  const { name, position, team, id } = player;
+const Player = ({ player, onDeleteClick, onMakeStarter, onBenchStarter }) => {
+  const { name, position, nflteam, id, starter } = player;
+
+  const [isStarter, setIsStarter] = useState(starter);
+
+  const handleMakeStarterClick = () => {
+    setIsStarter(true);
+    onMakeStarter(id);
+  };
+
+  const handleRemoveStarterClick = () => {
+    setIsStarter(false);
+    onBenchStarter(id);
+  };
 
   return (
     <div className="player">
-      <p>{name} - {position} - {team}</p>
+      <p>{name} - {position} - {nflteam}{isStarter ? ' - Starter' : ''}</p>
       <button onClick={() => onDeleteClick(id)}>Remove From Team</button>
-      <button onClick={() => onMakeStarter(id)}>Make Starter</button>
+      {isStarter ? (
+        <button onClick={handleRemoveStarterClick}>Remove Starter</button>
+      ) : (
+        <button onClick={handleMakeStarterClick}>Make Starter</button>
+      )}
     </div>
   );
 };
