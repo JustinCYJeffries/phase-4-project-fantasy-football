@@ -1,6 +1,6 @@
 import React from 'react';
 import Player from './Player';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 function Team({ team, players, onRemovePlayerFromTeam, onEditTeam }) {
   const [name, setName] = useState(team.name);
@@ -11,6 +11,10 @@ function Team({ team, players, onRemovePlayerFromTeam, onEditTeam }) {
     
     
   };
+
+  useEffect(() => {
+    setName(team.name);
+  }, [team]);
 
   const handleSubmit = () => {
    
