@@ -8,22 +8,16 @@ import Cookies from 'js-cookie';
 
 
 import TeamList from './TeamList';
-import CreateTeamForm from './CreateTeamForm';
-import SelectTeamForm from './SelectTeamForm';
-import TeamRoster from './TeamRoster';
 import LoginForm from './LoginForm';
 import Logout from './Logout';
 import SignupForm from './SignupForm';
 import PlayerSearchForm from './PlayerSearchForm';
 import PlayerSearchResult from './PlayerSearchResult';
-import AddPlayerButton from './AddPlayerButton';
-import ConfirmAddPlayerModal from './ConfirmAddPlayerModal';
-import EditPlayerModal from './EditPlayerModal';
-import MaxPlayersWarning from './MaxPlayersWarning';
 import PlayerList from './PlayerList';
 import Team from './Team';
 import CreatePlayerForm from './CreatePlayerForm';
 import ErrorMessage from './ErrorMessage';
+import PlayerCard from './PlayerCard';
 
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
@@ -32,13 +26,11 @@ function App() {
   const [players, setPlayers] = useState([]);
   const [totalPlayers, setTotalPlayers] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
-  const [addingPlayer, setAddingPlayer] = useState(null);
-  const [editingPlayer, setEditingPlayer] = useState(null);
   const [error, setError] = useState(null);
-  const [maxPlayersWarning, setMaxPlayersWarning] = useState(false);
   const [newName, setNewName] = useState("");
   const [showResults, setShowResults] = useState(false);
   const [showPlayerList, setShowPlayerList] = useState(false);
+  const [selectedPlayer, setSelectedPlayer] = useState(null)
   const navigate = useNavigate();
   axios.defaults.withCredentials = true
 
@@ -160,8 +152,18 @@ function App() {
   };
 
   const handleSelectTeam = (team) => {
-    // Update selected team state
     setSelectedTeam(team);
+  };
+  const handleSelectPlayer = async (player) => {
+    const playerID = player.player_api_key
+    const response = await axios.get(`https://api.sportsdata.io/v3/nfl/scores/json/Player/${playerID}?key=f96ee404946b4896b5691149c6e8e1bc`, {
+  withCredentials: false
+});
+
+    const playerInfo = response.data;
+    setSelectedPlayer(playerInfo)
+    console.log(playerInfo)
+    
   };
 
   const handleShowPlayerList = ()=> {
@@ -171,6 +173,9 @@ function App() {
 
   const handleDismiss = ()=> {
     setError(null)
+  }
+  const handleClose = ()=> {
+    setSelectedPlayer(null)
   }
 
   const handleAddPlayer = async (player) => {
@@ -224,6 +229,7 @@ function App() {
     <div className="App">
       <h2>Fantasy Football Team Builder</h2>
         {error ? <ErrorMessage message={error} handleDismiss={handleDismiss} /> : null}
+        {selectedPlayer ? <PlayerCard selectedPlayer={selectedPlayer} handleClose={handleClose}/> : null}
         <Routes>
           <Route exact path="/logout" element= {<Logout onLogout={handleLogout} />}/>
           <Route exact path="/" element=
@@ -237,7 +243,7 @@ function App() {
   <TeamList teams={teams}
             onSelectTeam={handleSelectTeam}
             onDeleteTeam={handleDeleteTeam}
-
+            
             onAddPlayer={handleShowPlayerList}
             selectedTeam={selectedTeam} onCreateTeam={handleCreateTeam} currentUser={currentUser} onEditTeam={handleEditTeamName} />
 
@@ -246,7 +252,7 @@ function App() {
 </div>
 <div className='column3'>
   <div className="team-container">
-    {selectedTeam ? <Team team={selectedTeam} players={players} onRemovePlayerFromTeam={handleDeletePlayer} onMakeTeamStarter={handleMakeStarter} onEditTeam={handleEditTeam} onBenchTeamStarter={handleBenchStarter}/> : null}
+    {selectedTeam ? <Team team={selectedTeam} onSelectedPlayer={handleSelectPlayer} players={players} onRemovePlayerFromTeam={handleDeletePlayer} onMakeTeamStarter={handleMakeStarter} onEditTeam={handleEditTeam} onBenchTeamStarter={handleBenchStarter}/> : null}
 
   </div>
   </div>
@@ -254,7 +260,7 @@ function App() {
   {showPlayerList && (
     <div className="player-container">
       <PlayerSearchForm onPlayerSearch={handlePlayerSearch} />
-      {showResults ?  <PlayerSearchResult players={searchResults} onAddClick={handleAddPlayer} /> : <PlayerList players={totalPlayers} onAddClick={handleAddPlayer}/> }
+      {showResults ?  <PlayerSearchResult onSelectedPlayer={handleSelectPlayer} players={searchResults} onAddClick={handleAddPlayer} /> : <PlayerList players={totalPlayers} onSelectedPlayer={handleSelectPlayer} onAddClick={handleAddPlayer}/> }
 
     </div>
   )}

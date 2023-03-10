@@ -2,7 +2,7 @@ import React from 'react';
 import Player from './Player';
 import { useState, useEffect } from 'react';
 
-function Team({ team, players, onRemovePlayerFromTeam, onEditTeam, onMakeTeamStarter, onBenchTeamStarter }) {
+function Team({ team, players, onRemovePlayerFromTeam, onEditTeam, onMakeTeamStarter, onBenchTeamStarter, onSelectedPlayer }) {
   const [name, setName] = useState(team.name);
 
   const handleNameChange = (event) => {
@@ -49,6 +49,7 @@ function Team({ team, players, onRemovePlayerFromTeam, onEditTeam, onMakeTeamSta
             onDeleteClick={() => handleRemovePlayer(player.id)}
             onMakeStarter={()=> handleMakeStarter(player.id) }
             onBenchStarter={()=> handleBenchStarter(player.id) }
+            onSelectedPlayer={onSelectedPlayer}
           />
         ))}
       </ul>

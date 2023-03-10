@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-function PlayerList({onAddClick, players}) {
+function PlayerList({onAddClick, players, onSelectedPlayer}) {
   
  
 
@@ -16,7 +16,7 @@ function PlayerList({onAddClick, players}) {
       <ul>
         {players.map((player) => (
             
-          <li key={player.id}>{player.name} {player.position}  <button onClick={() => onAddClick(player)}>Add Player</button></li>
+          <li  key={player.id}><span onClick={()=>onSelectedPlayer(player)}>{player.name} {player.position}  </span><button onClick={() => onAddClick(player)}>Add Player</button></li>
           
         ))}
       </ul>
