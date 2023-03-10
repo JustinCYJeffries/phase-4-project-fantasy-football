@@ -12,7 +12,7 @@ const ErrorMessage = ({ message, handleDismiss }) => {
       
         <div className="error-message-popup">
           <div className="error-message">
-            {message}
+            {message}{console.log(message)}
           </div>
           <button className="dismiss-button" onClick={handleDismissClick}>Dismiss</button>
         </div>

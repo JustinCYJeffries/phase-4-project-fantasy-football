@@ -40,6 +40,6 @@ class PlayerTeamsController < ApplicationController
   end
 
   def record_not_unique
-    render json: { error: 'Player is already on this team' }, status: :unprocessable_entity
+    render plain: 'Player is already on this team' , status: :unprocessable_entity
   end
 end

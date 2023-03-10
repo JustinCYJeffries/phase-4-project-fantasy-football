@@ -86,9 +86,9 @@ function App() {
     }
   };
 
-  const handleLogout = async (username, password) => {
+  const handleLogout = async () => {
     // Send login request to server
-    const response = await axios.delete("http://localhost:3000/sessions", { username, password });
+    const response = await axios.delete("http://localhost:3000/sessions", { withCredentials: true });
     // Update current user state
     Cookies.remove("user",  { sameSite: 'none', secure: true })
     setCurrentUser(null);

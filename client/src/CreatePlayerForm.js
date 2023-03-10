@@ -42,7 +42,8 @@ function AddPlayerForm({onCreateNewPlayer}) {
     setTeam('ARI');
   };
 
-  return (
+  return (<div className='create-player-form'>
+    <h3>Create A New Player</h3>
     <form onSubmit={handleSubmit}>
       <label>
         Player name:
@@ -99,6 +100,7 @@ function AddPlayerForm({onCreateNewPlayer}) {
       <br />
       <button type="submit">Add player</button>
     </form>
+    </div>
   );
 }
 

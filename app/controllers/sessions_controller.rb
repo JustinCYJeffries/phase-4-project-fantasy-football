@@ -11,7 +11,7 @@ class SessionsController < ApplicationController
       render json: user
     else
       # If the user doesn't exist or the password is incorrect, show an error message
-      render json: { error: "Not authorized" }, status: :unauthorized
+      render plain: "Not authorized" , status: :unauthorized
       
     end
   end
