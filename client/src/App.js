@@ -55,7 +55,7 @@ function App() {
       setTeams(response.data);
     };
     fetchTeams();
-  }, []);
+  }, [currentUser]);
 
   useEffect(() => {
     // Fetch players for selected team when it changes
@@ -97,6 +97,7 @@ function App() {
     // Update current user state
     Cookies.remove("user",  { sameSite: 'none', secure: true })
     setCurrentUser(null);
+    setTeams([])
     navigate("/");
   };
 

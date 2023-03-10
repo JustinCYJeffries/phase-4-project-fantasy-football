@@ -25,9 +25,7 @@ const TeamItem = ({ team, onSelectTeam, onDeleteTeam, onEditTeam, onAddPlayer })
       </div>
       <div className="team-buttons">
         
-        <button className="btn btn-default btn-sm" onClick={handleEditTeam}>
-          Edit
-        </button>
+       
         <button className="btn btn-danger btn-sm" onClick={handleDeleteTeam}>
           Delete
         </button>
@@ -40,7 +38,7 @@ TeamItem.propTypes = {
   team: PropTypes.object.isRequired,
   onSelectTeam: PropTypes.func.isRequired,
   onDeleteTeam: PropTypes.func.isRequired,
-  onEditTeam: PropTypes.func.isRequired
+
   
 };
 
