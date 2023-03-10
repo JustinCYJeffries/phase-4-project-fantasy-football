@@ -7,7 +7,7 @@ class UsersController < ApplicationController
       session[:user_id] = @user.id
       render json: @user
     else
-      return :forbidden
+      render json: @user.errors, status: :unprocessable_entity
     end
   end
 

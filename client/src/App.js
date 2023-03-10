@@ -23,6 +23,7 @@ import MaxPlayersWarning from './MaxPlayersWarning';
 import PlayerList from './PlayerList';
 import Team from './Team';
 import CreatePlayerForm from './CreatePlayerForm';
+import ErrorMessage from './ErrorMessage';
 
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
@@ -33,6 +34,7 @@ function App() {
   const [searchResults, setSearchResults] = useState([]);
   const [addingPlayer, setAddingPlayer] = useState(null);
   const [editingPlayer, setEditingPlayer] = useState(null);
+  const [error, setError] = useState(null);
   const [maxPlayersWarning, setMaxPlayersWarning] = useState(false);
   const [newName, setNewName] = useState("");
   const [showResults, setShowResults] = useState(false);
@@ -82,18 +84,19 @@ function App() {
 
 
   const handleLogin = async (username, password) => {
-    // Send login request to server
-    const response = await axios.post("http://localhost:3000/sessions", { username, password });
-
-    // Update current user state
-    Cookies.set("user", response.data,  { sameSite: 'none', secure: true })
-    setCurrentUser(response.data);
+    try {
+      const response = await axios.post("http://localhost:3000/sessions", { username, password });
+      setError(null);
+      Cookies.set("user", response.data,  { sameSite: 'none', secure: true })
+      setCurrentUser(response.data);
+    } catch (error) {
+      setError(JSON.stringify(error.response.data));
+    }
   };
 
   const handleLogout = async (username, password) => {
     // Send login request to server
     const response = await axios.delete("http://localhost:3000/sessions", { username, password });
-
     // Update current user state
     Cookies.remove("user",  { sameSite: 'none', secure: true })
     setCurrentUser(null);
@@ -102,12 +105,15 @@ function App() {
   };
 
   const handleSignup = async (username, password) => {
-    // Send signup request to server
-    const response = await axios.post("http://localhost:3000/users", { username, password });
-
-    // Update current user state
-    setCurrentUser(response.data);
-    navigate("/");
+    try {
+      const response = await axios.post("http://localhost:3000/users", { username, password });
+      setError(null);
+      Cookies.set("user", response.data,  { sameSite: 'none', secure: true })
+      setCurrentUser(response.data);
+      navigate("/");
+    } catch (error) {
+      setError(JSON.stringify(error.response.data));
+    }
   };
 
   const handleCreateTeam = async (name, currentUser) => {
@@ -132,7 +138,7 @@ function App() {
   };
 
   const handleEditTeam = async (teamId, thisName ) => {
-    
+
     // Send edit team request to server
     const response = await axios.patch(`http://localhost:3000/teams/${teamId}`, { team:{name: thisName} });
 
@@ -164,9 +170,13 @@ function App() {
   }
 
   const handleAddPlayer = async (player) => {
-    
-    const response = await axios.post(`http://localhost:3000/teams/${selectedTeam.id}/player_teams`, {player_id: player.id});
-    setPlayers(response.data);
+    try {
+      const response = await axios.post(`http://localhost:3000/teams/${selectedTeam.id}/player_teams`, {player_id: player.id});
+      setError(null);
+      setPlayers(response.data);
+    } catch (error) {
+      setError(JSON.stringify(error.response.data));
+    }
   };
 
   const handleNewPlayer = async (player) => {
@@ -182,7 +192,7 @@ function App() {
     const playerList = response.data;
 
     // Filter players based on search query
-    
+
 
     // Update filtered players state
     setSearchResults(playerList);
@@ -209,6 +219,7 @@ function App() {
   return (
     <div className="App">
       <h2>Fantasy Football Team Builder</h2>
+        <ErrorMessage message={error} />
         <Routes>
           <Route exact path="/logout" element= {<Logout onLogout={handleLogout} />}/>
           <Route exact path="/" element=
