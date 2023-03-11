@@ -42,14 +42,7 @@ function App() {
     }
   }, []);
 
-  useEffect(() => {
-    // Fetch teams when the component mounts
-    const fetchTeams = async () => {
-      const response = await axios.get("http://localhost:3000/teams");
-      setTeams(response.data);
-    };
-    fetchTeams();
-  }, [currentUser]);
+
 
   useEffect(() => {
     // Fetch players for selected team when it changes
@@ -84,6 +77,11 @@ function App() {
     } catch (error) {
       setError(JSON.stringify(error.response.data));
     }
+    const fetchTeams = async () => {
+      const response = await axios.get("http://localhost:3000/teams");
+      setTeams(response.data);
+    };
+    fetchTeams();
   };
 
   const handleLogout = async () => {
