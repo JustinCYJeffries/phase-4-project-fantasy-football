@@ -27,7 +27,7 @@ class PlayersController < ApplicationController
     if @player.save
       render json: @player, status: :created
     else
-      render json: @player.errors, status: :unprocessable_entity
+      render plain: 'Field Must Be Filled Out' , status: :unprocessable_entity
     end
   end
 

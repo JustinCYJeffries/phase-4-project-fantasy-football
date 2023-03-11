@@ -46,7 +46,7 @@ function TeamList(props) {
       <h2>Create a new team</h2>
       <label>
         Team name:
-        <input type="text" value={name} onChange={handleNameChange} required ></input>
+        <input type="text" value={name} onChange={handleNameChange} ></input>
       </label>
       <button type="submit">Create Team</button>
     </form>

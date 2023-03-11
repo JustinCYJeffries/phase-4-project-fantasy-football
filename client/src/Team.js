@@ -38,7 +38,7 @@ function Team({ team, players, onRemovePlayerFromTeam, onEditTeam, onMakeTeamSta
     <div className="team">
       <h2>{team.name}</h2>
       <form>
-        <input type="text" value={name} onChange={handleNameChange} required />
+        <input type="text" value={name} onChange={handleNameChange}  />
       </form>
       <button type="submit" onClick={handleSubmit}>Edit Team Name</button>
       <ul className="team-players">

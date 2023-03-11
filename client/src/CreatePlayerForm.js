@@ -20,11 +20,7 @@ function AddPlayerForm({onCreateNewPlayer}) {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    // Check that name and position are filled in
-    if (name.trim() === '' || position.trim() === '') {
-      alert('Please enter a name and position for the player.');
-      return;
-    }
+  
 
     // Create a new player object
     const newPlayer = {
@@ -47,7 +43,7 @@ function AddPlayerForm({onCreateNewPlayer}) {
     <form onSubmit={handleSubmit}>
       <label>
         Player name:
-        <input type="text" value={name} onChange={handleNameChange} required />
+        <input type="text" value={name} onChange={handleNameChange} />
       </label>
       <br />
       <label>

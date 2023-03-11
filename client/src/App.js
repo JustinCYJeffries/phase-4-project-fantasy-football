@@ -107,13 +107,17 @@ function App() {
   };
 
   const handleCreateTeam = async (name, currentUser) => {
+    try{
     // Send create team request to server
     console.log(currentUser)
     const response = await axios.post("http://localhost:3000/teams", { name, user_id: currentUser });
 
     // Update teams state
     setTeams([...teams, response.data]);
-  };
+  }catch (error) {
+    setError(JSON.stringify(error.response.data));
+  }
+};
 
   const handleDeleteTeam = async (teamId) => {
     try {
@@ -128,7 +132,7 @@ function App() {
   };
 
   const handleEditTeam = async (teamId, thisName ) => {
-
+    try {
     // Send edit team request to server
     const response = await axios.patch(`http://localhost:3000/teams/${teamId}`, { team:{name: thisName} });
 
@@ -139,7 +143,10 @@ function App() {
       return [...prevTeams.slice(0, index), updatedTeam, ...prevTeams.slice(index + 1)];
     });
     setSelectedTeam(null)
-  };
+  }catch (error) {
+    setError(JSON.stringify(error.response.data));
+  }
+};
 
 
 
@@ -189,11 +196,14 @@ function App() {
   };
 
   const handleNewPlayer = async (player) => {
+    try{
     const response = await axios.post("http://localhost:3000/players", { player:{name: player.name, position: player.position, nflteam: player.team }});
    setTotalPlayers([...totalPlayers, response.data]);
     console.log(totalPlayers)
-
-  };
+}catch (error) {
+  setError(JSON.stringify(error.response.data));
+}
+};
 
   const handlePlayerSearch = async (term, position) => {
     // Send search request to server
