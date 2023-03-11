@@ -153,16 +153,18 @@ function App() {
     setSelectedTeam(team);
   };
   const handleSelectPlayer = async (player) => {
+    try {
     const playerID = player.player_api_key
     const response = await axios.get(`https://api.sportsdata.io/v3/nfl/scores/json/Player/${playerID}?key=f96ee404946b4896b5691149c6e8e1bc`, {
   withCredentials: false
-});
-
+}) 
     const playerInfo = response.data;
     setSelectedPlayer(playerInfo)
-    console.log(playerInfo)
-    
-  };
+    console.log(playerInfo) 
+  }
+  catch (error) {
+    setError(JSON.stringify("Custom Player No Information Available"));
+  }}
 
   const handleShowPlayerList = ()=> {
     setShowPlayerList(true);
